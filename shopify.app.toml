@@ -2,7 +2,7 @@
 
 client_id = "7e7c6ced0278c97c2c2cc439d3b026af"
 name = "Signalor GEO"
-application_url = "https://signalor-shopify.fly.dev"
+application_url = "https://signalor-shopify-app.onrender.com"
 embedded = true
 
 [access_scopes]
@@ -10,7 +10,7 @@ scopes = "read_products,write_products,read_content,write_content,read_metafield
 
 [auth]
 redirect_urls = [
-  "https://signalor-shopify.fly.dev/auth/callback",
+  "https://signalor-shopify-app.onrender.com/auth/callback",
   "https://localhost:3000/auth/callback"
 ]
 
@@ -18,14 +18,14 @@ redirect_urls = [
 api_version = "2024-10"
 
   [webhooks.privacy_compliance]
-  customer_deletion_url = "https://signalor-shopify.fly.dev/webhooks"
-  customer_data_request_url = "https://signalor-shopify.fly.dev/webhooks"
-  shop_deletion_url = "https://signalor-shopify.fly.dev/webhooks"
+  customer_deletion_url = "https://signalor-shopify-app.onrender.com/webhooks"
+  customer_data_request_url = "https://signalor-shopify-app.onrender.com/webhooks"
+  shop_deletion_url = "https://signalor-shopify-app.onrender.com/webhooks"
 
 [app_proxy]
 subpath = "signalor"
 prefix = "apps"
-url = "https://signalor-shopify.fly.dev/api"
+url = "https://signalor-shopify-app.onrender.com/api"
 
 [build]
 automatically_update_urls_on_dev = true
