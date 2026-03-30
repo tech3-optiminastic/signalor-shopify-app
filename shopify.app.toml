@@ -3,7 +3,7 @@
 client_id = "7e7c6ced0278c97c2c2cc439d3b026af"
 name = "Signalor GEO"
 application_url = "https://signalor-shopify-app.onrender.com"
-embedded = true
+embedded = false
 
 [access_scopes]
 scopes = "read_products,write_products,read_content,write_content,read_metafields,write_metafields,read_themes,write_themes"
