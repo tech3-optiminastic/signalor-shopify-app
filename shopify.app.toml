@@ -1,6 +1,6 @@
 # Signalor GEO — Shopify App Configuration
 
-client_id = "7e7c6ced0278c97c2c2cc439d3b026af"
+client_id = "5d7a7f1d16903fb01ddbc54f25f7c3e8"
 name = "Signalor GEO"
 application_url = "https://signalor-shopify-app.onrender.com"
 embedded = false
