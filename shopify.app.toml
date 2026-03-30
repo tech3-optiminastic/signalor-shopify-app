@@ -1,0 +1,32 @@
+# Signalor GEO — Shopify App Configuration
+
+client_id = "7e7c6ced0278c97c2c2cc439d3b026af"
+name = "Signalor GEO"
+application_url = "https://signalor-shopify.fly.dev"
+embedded = true
+
+[access_scopes]
+scopes = "read_products,write_products,read_content,write_content,read_metafields,write_metafields,read_themes,write_themes"
+
+[auth]
+redirect_urls = [
+  "https://signalor-shopify.fly.dev/auth/callback",
+  "https://localhost:3000/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-10"
+
+  [webhooks.privacy_compliance]
+  customer_deletion_url = "https://signalor-shopify.fly.dev/webhooks"
+  customer_data_request_url = "https://signalor-shopify.fly.dev/webhooks"
+  shop_deletion_url = "https://signalor-shopify.fly.dev/webhooks"
+
+[app_proxy]
+subpath = "signalor"
+prefix = "apps"
+url = "https://signalor-shopify.fly.dev/api"
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "blessing-10011.myshopify.com"

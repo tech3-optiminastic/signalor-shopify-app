@@ -1,0 +1,37 @@
+{% comment %}
+  Signalor GEO — JSON-LD Schema Injection
+  Reads the signalor.schema metafield from the current page or product
+  and renders it as a JSON-LD script tag.
+{% endcomment %}
+
+{% if page.metafields.signalor.schema != blank %}
+<script type="application/ld+json">
+{{ page.metafields.signalor.schema.value }}
+</script>
+{% endif %}
+
+{% if product.metafields.signalor.schema != blank %}
+<script type="application/ld+json">
+{{ product.metafields.signalor.schema.value }}
+</script>
+{% endif %}
+
+{% if article.metafields.signalor.schema != blank %}
+<script type="application/ld+json">
+{{ article.metafields.signalor.schema.value }}
+</script>
+{% endif %}
+
+{% if collection.metafields.signalor.schema != blank %}
+<script type="application/ld+json">
+{{ collection.metafields.signalor.schema.value }}
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Signalor Schema",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}

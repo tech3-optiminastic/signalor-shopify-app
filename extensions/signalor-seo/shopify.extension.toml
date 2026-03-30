@@ -1,0 +1,17 @@
+api_version = "2024-10"
+
+[[extensions]]
+name = "Signalor SEO"
+handle = "signalor-seo"
+uid = "0cab2fae-d991-03c4-9cdf-b6299e52a3b17aa56e55"
+type = "theme"
+
+  [[extensions.blocks]]
+  name = "signalor-schema"
+  target = "section"
+  template = "blocks/schema-injection.liquid"
+
+  [[extensions.blocks]]
+  name = "signalor-ai-meta"
+  target = "section"
+  template = "blocks/ai-meta.liquid"

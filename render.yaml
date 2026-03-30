@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: signalor-shopify-app
+    runtime: node
+    plan: free
+    buildCommand: npm install --legacy-peer-deps && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SHOPIFY_API_KEY
+        sync: false
+      - key: SHOPIFY_API_SECRET
+        sync: false
+      - key: SIGNALOR_HMAC_SECRET
+        sync: false
+      - key: SCOPES
+        value: read_products,write_products,read_content,write_content,read_metafields,write_metafields,read_themes,write_themes
+      - key: DATABASE_URL
+        sync: false

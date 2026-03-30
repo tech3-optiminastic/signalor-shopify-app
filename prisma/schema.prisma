@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Shopify session storage (required by @shopify/shopify-app-remix)
+model Session {
+  id          String    @id
+  shop        String
+  state       String
+  isOnline    Boolean   @default(false)
+  scope       String?
+  expires     DateTime?
+  accessToken String
+  userId      BigInt?
+
+  @@index([shop])
+}
+
+// Fix history log
+model FixLog {
+  id        Int      @id @default(autoincrement())
+  shop      String
+  fixType   String
+  url       String
+  status    String
+  message   String?
+  createdAt DateTime @default(now())
+
+  @@index([shop, createdAt])
+}

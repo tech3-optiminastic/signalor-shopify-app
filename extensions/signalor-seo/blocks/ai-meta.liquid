@@ -1,0 +1,38 @@
+{% comment %}
+  Signalor GEO — AI Bot Meta Tags
+  Reads signalor.ai_meta metafield and renders meta tags allowing AI crawlers.
+{% endcomment %}
+
+{% assign has_ai_meta = false %}
+
+{% if page.metafields.signalor.ai_meta != blank %}
+  {% assign has_ai_meta = true %}
+{% endif %}
+
+{% if product.metafields.signalor.ai_meta != blank %}
+  {% assign has_ai_meta = true %}
+{% endif %}
+
+{% if article.metafields.signalor.ai_meta != blank %}
+  {% assign has_ai_meta = true %}
+{% endif %}
+
+{% if has_ai_meta %}
+<!-- Signalor GEO: AI Crawler Directives -->
+<meta name="robots" content="index, follow">
+<meta name="GPTBot" content="index, follow">
+<meta name="Google-Extended" content="index, follow">
+<meta name="anthropic-ai" content="index, follow">
+<meta name="ClaudeBot" content="index, follow">
+<meta name="PerplexityBot" content="index, follow">
+<meta name="ChatGPT-User" content="index, follow">
+<meta name="CCBot" content="index, follow">
+{% endif %}
+
+{% schema %}
+{
+  "name": "Signalor AI Meta",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}
