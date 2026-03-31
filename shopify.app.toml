@@ -1,32 +1,32 @@
 # Signalor GEO — Shopify App Configuration
 
-client_id = "5d7a7f1d16903fb01ddbc54f25f7c3e8"
+client_id = "ccd189a693deacab82dd3159e7e58334"
 name = "Signalor GEO"
-application_url = "https://signalor-shopify-app.onrender.com"
+application_url = "https://signalor-geo-app.onrender.com"
 embedded = false
 
 [access_scopes]
-scopes = "read_products,write_products,read_content,write_content,read_metafields,write_metafields,read_themes,write_themes"
+scopes = "read_products,write_products,read_content,write_content,read_metaobjects,write_metaobjects,read_themes,write_themes,read_customers,read_orders"
 
 [auth]
 redirect_urls = [
-  "https://signalor-shopify-app.onrender.com/auth/callback",
-  "https://localhost:3000/auth/callback"
+  "https://signalor-geo-app.onrender.com/auth/callback",
+  "http://localhost:8000/api/integrations/shopify/callback/",
+  "http://localhost:3000/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-10"
 
   [webhooks.privacy_compliance]
-  customer_deletion_url = "https://signalor-shopify-app.onrender.com/webhooks"
-  customer_data_request_url = "https://signalor-shopify-app.onrender.com/webhooks"
-  shop_deletion_url = "https://signalor-shopify-app.onrender.com/webhooks"
+  customer_deletion_url = "https://signalor-geo-app.onrender.com/webhooks"
+  customer_data_request_url = "https://signalor-geo-app.onrender.com/webhooks"
+  shop_deletion_url = "https://signalor-geo-app.onrender.com/webhooks"
 
 [app_proxy]
 subpath = "signalor"
 prefix = "apps"
-url = "https://signalor-shopify-app.onrender.com/api"
+url = "https://signalor-geo-app.onrender.com/api"
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "blessing-10011.myshopify.com"
