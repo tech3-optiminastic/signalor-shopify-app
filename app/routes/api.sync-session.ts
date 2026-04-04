@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { authenticateSignalor } from "~/lib/signalor-auth.server";
+import { verifySignalorHmacRequest } from "~/lib/signalor-auth.server";
 import { prisma } from "~/shopify.server";
 
 /**
@@ -20,7 +20,8 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    const { body } = await authenticateSignalor(request);
+    // HMAC only — cannot use authenticateSignalor() here (no Prisma session row yet).
+    const { body } = await verifySignalorHmacRequest(request);
 
     const shop = body.shop as string;
     const accessToken = body.accessToken as string;
