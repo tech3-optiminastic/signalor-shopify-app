@@ -47,7 +47,7 @@ async function handleLlmsTxt(url: URL) {
 
   // Fetch the metafield
   const resp = await fetch(
-    `https://${shop}/admin/api/2025-04/graphql.json`,
+    `https://${shop}/admin/api/2025-07/graphql.json`,
     {
       method: "POST",
       headers: {
