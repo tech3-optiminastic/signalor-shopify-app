@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: signalor-shopify-app
+    name: signalor-geo-app
     runtime: node
     plan: free
     buildCommand: npm install --legacy-peer-deps && npx prisma generate && npm run build
@@ -16,7 +16,9 @@ services:
         sync: false
       - key: SIGNALOR_SHOPIFY_APP_HMAC_SECRET
         sync: false
+      - key: SHOPIFY_APP_URL
+        value: https://signalor-geo-app.onrender.com
       - key: SCOPES
-        value: read_products,write_products,read_content,write_content,read_metafields,write_metafields,read_themes,write_themes
+        value: read_products,write_products,read_content,write_content,read_metaobjects,write_metaobjects,read_themes,write_themes,read_customers,read_orders
       - key: DATABASE_URL
         sync: false

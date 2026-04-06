@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const adminClient = {
       async graphql(query: string, options?: { variables?: Record<string, unknown> }) {
         const resp = await fetch(
-          `https://${auth.shop}/admin/api/2024-10/graphql.json`,
+          `https://${auth.shop}/admin/api/2025-04/graphql.json`,
           {
             method: "POST",
             headers: {

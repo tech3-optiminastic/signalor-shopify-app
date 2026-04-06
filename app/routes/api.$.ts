@@ -1,16 +1,30 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import { prisma } from "~/shopify.server";
 
 /**
- * GET /api/llms.txt — Serves llms.txt content as plain text.
+ * Splat route for App Proxy requests.
  *
- * This is called via Shopify App Proxy:
+ * Shopify App Proxy sends requests like:
  *   https://store.myshopify.com/apps/signalor/llms.txt
- *     → proxied to → https://signalor-shopify.fly.dev/api/llms.txt?shop=store.myshopify.com
+ *     → https://signalor-geo-app.onrender.com/api/llms.txt?shop=...&signature=...
  *
- * The URL redirect /llms.txt → /apps/signalor/llms.txt makes it accessible at root.
+ * Remix flat routing uses dots as path separators, so "api.llms-txt.ts" becomes
+ * /api/llms-txt (hyphen), not /api/llms.txt (dot). This splat route catches
+ * all /api/* paths that don't match a specific route.
  */
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);
+  const splatPath = params["*"] || "";
+
+  // Handle /api/llms.txt (served via App Proxy)
+  if (splatPath === "llms.txt") {
+    return handleLlmsTxt(url);
+  }
+
+  return new Response("Not found", { status: 404 });
+}
+
+async function handleLlmsTxt(url: URL) {
   const shop = url.searchParams.get("shop");
 
   if (!shop) {
@@ -19,10 +33,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
-
-  // Fetch llms.txt content from shop metafield via Shopify Admin API
-  // We need the offline session token for this shop
-  const { prisma } = await import("~/shopify.server");
 
   const session = await prisma.session.findFirst({
     where: { shop, isOnline: false },
@@ -37,7 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   // Fetch the metafield
   const resp = await fetch(
-    `https://${shop}/admin/api/2024-10/graphql.json`,
+    `https://${shop}/admin/api/2025-04/graphql.json`,
     {
       method: "POST",
       headers: {

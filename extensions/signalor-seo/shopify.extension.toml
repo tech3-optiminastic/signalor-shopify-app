@@ -1,4 +1,4 @@
-api_version = "2024-10"
+api_version = "2025-04"
 
 [[extensions]]
 name = "Signalor SEO"
@@ -8,10 +8,10 @@ type = "theme"
 
   [[extensions.blocks]]
   name = "signalor-schema"
-  target = "section"
+  target = "head"
   template = "blocks/schema-injection.liquid"
 
   [[extensions.blocks]]
   name = "signalor-ai-meta"
-  target = "section"
+  target = "head"
   template = "blocks/ai-meta.liquid"
