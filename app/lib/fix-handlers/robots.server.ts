@@ -93,10 +93,20 @@ export async function handleRobotsFix(
     };
   }
 
-  // 4. Append our rules
+  // 4. Build new content — preserve Shopify defaults + append AI rules
+  const DEFAULT_ROBOTS_LIQUID = `{% for group in robots.default_groups %}
+{{- group.user_agent -}}
+{% for rule in group.rules %}
+{{- rule -}}
+{% endfor %}
+{%- if group.sitemap != blank -%}
+{{ group.sitemap }}
+{%- endif -%}
+{% endfor %}`;
+
   const newContent = currentContent
     ? `${currentContent}\n\n${AI_BOT_RULES}\n`
-    : `{% content_for_header %}\n{{ content_for_layout }}\n\n${AI_BOT_RULES}\n`;
+    : `${DEFAULT_ROBOTS_LIQUID}\n\n${AI_BOT_RULES}\n`;
 
   // 5. Write back via theme file upsert
   const writeResp = await admin.graphql(

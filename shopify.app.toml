@@ -1,6 +1,6 @@
 # Signalor GEO — Shopify App Configuration
 
-client_id = "9addb24cc22d5e20ed12eb0901a25579"
+client_id = "8153badb6e71523e6844833ad6c23b18"
 name = "Signalor GEO"
 application_url = "https://signalor-geo-app.onrender.com"
 embedded = false
@@ -16,7 +16,15 @@ redirect_urls = [
 ]
 
 [webhooks]
-api_version = "2025-07"
+api_version = "2026-04"
+
+  [[webhooks.subscriptions]]
+  topics = ["products/create", "products/update", "products/delete"]
+  uri = "/webhooks/products"
+
+  [[webhooks.subscriptions]]
+  topics = ["collections/create", "collections/update", "collections/delete"]
+  uri = "/webhooks/collections"
 
   [webhooks.privacy_compliance]
   customer_deletion_url = "https://signalor-geo-app.onrender.com/webhooks"

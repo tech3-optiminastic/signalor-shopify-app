@@ -1,8 +1,11 @@
 {% comment %}
   Signalor GEO — JSON-LD Schema Injection
-  Reads the signalor.schema metafield from the current page or product
-  and renders it as a JSON-LD script tag.
+
+  Priority: Custom metafield schema > Auto-generated fallback
+  Renders in <head> on every page via Theme App Extension.
 {% endcomment %}
+
+{% comment %} ── Custom schema from metafields (set by auto-fix) ── {% endcomment %}
 
 {% if page.metafields.signalor.schema != blank %}
 <script type="application/ld+json">
@@ -25,6 +28,75 @@
 {% if collection.metafields.signalor.schema != blank %}
 <script type="application/ld+json">
 {{ collection.metafields.signalor.schema.value }}
+</script>
+{% endif %}
+
+{% comment %} ── Auto-generated fallback schemas ── {% endcomment %}
+
+{% comment %} Organization schema on homepage {% endcomment %}
+{% if template == 'index' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  "url": "{{ shop.url }}",
+  {% if shop.brand.logo %}
+  "logo": {{ shop.brand.logo | image_url: width: 512 | json }},
+  {% endif %}
+  "description": {{ shop.description | default: shop.name | json }}
+}
+</script>
+{% endif %}
+
+{% comment %} Product schema (fallback if no custom metafield) {% endcomment %}
+{% if product and product.metafields.signalor.schema == blank %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title | json }},
+  "description": {{ product.description | strip_html | truncate: 500 | json }},
+  {% if product.featured_image %}
+  "image": {{ product.featured_image | image_url: width: 1024 | json }},
+  {% endif %}
+  "brand": {
+    "@type": "Brand",
+    "name": {{ shop.name | json }}
+  },
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": {{ cart.currency.iso_code | json }},
+    "lowPrice": {{ product.price_min | money_without_currency | json }},
+    "highPrice": {{ product.price_max | money_without_currency | json }},
+    "offerCount": {{ product.variants.size | json }},
+    "availability": {% if product.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %}
+  }
+}
+</script>
+{% endif %}
+
+{% comment %} Article schema (fallback) {% endcomment %}
+{% if article and article.metafields.signalor.schema == blank %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ article.title | json }},
+  "author": {
+    "@type": "Person",
+    "name": {{ article.author | json }}
+  },
+  "datePublished": {{ article.published_at | date: "%Y-%m-%dT%H:%M:%S" | json }},
+  "dateModified": {{ article.updated_at | date: "%Y-%m-%dT%H:%M:%S" | json }},
+  {% if article.image %}
+  "image": {{ article.image | image_url: width: 1024 | json }},
+  {% endif %}
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ shop.name | json }}
+  }
+}
 </script>
 {% endif %}
 

@@ -1,25 +1,11 @@
 {% comment %}
-  Signalor GEO — AI Bot Meta Tags
-  Reads signalor.ai_meta metafield and renders meta tags allowing AI crawlers.
+  Signalor GEO — AI Crawler Meta Tags
+  Always injected into <head> — tells AI bots this page is safe to index.
+  Points to llms.txt via App Proxy.
 {% endcomment %}
 
-{% assign has_ai_meta = false %}
-
-{% if page.metafields.signalor.ai_meta != blank %}
-  {% assign has_ai_meta = true %}
-{% endif %}
-
-{% if product.metafields.signalor.ai_meta != blank %}
-  {% assign has_ai_meta = true %}
-{% endif %}
-
-{% if article.metafields.signalor.ai_meta != blank %}
-  {% assign has_ai_meta = true %}
-{% endif %}
-
-{% if has_ai_meta %}
-<!-- Signalor GEO: AI Crawler Directives -->
-<meta name="robots" content="index, follow">
+<!-- Signalor GEO: AI Visibility Signals -->
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <meta name="GPTBot" content="index, follow">
 <meta name="Google-Extended" content="index, follow">
 <meta name="anthropic-ai" content="index, follow">
@@ -27,6 +13,19 @@
 <meta name="PerplexityBot" content="index, follow">
 <meta name="ChatGPT-User" content="index, follow">
 <meta name="CCBot" content="index, follow">
+
+{% comment %} llms.txt discovery link — served via Signalor App Proxy {% endcomment %}
+<link rel="llms" href="{{ shop.url }}/apps/signalor/llms.txt" type="text/plain">
+
+{% comment %} AI-specific description if available {% endcomment %}
+{% if product.metafields.signalor.ai_description != blank %}
+<meta name="ai-description" content="{{ product.metafields.signalor.ai_description.value | escape }}">
+{% elsif product %}
+<meta name="ai-description" content="{{ product.description | strip_html | truncate: 200 | escape }}">
+{% endif %}
+
+{% if page.metafields.signalor.ai_description != blank %}
+<meta name="ai-description" content="{{ page.metafields.signalor.ai_description.value | escape }}">
 {% endif %}
 
 {% schema %}
