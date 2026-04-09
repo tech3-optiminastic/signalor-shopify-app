@@ -6,7 +6,7 @@ import { prisma } from "~/shopify.server";
  *
  * Shopify App Proxy sends:
  *   https://store.myshopify.com/apps/signalor/llms.txt
- *     → https://signalor-geo-app.onrender.com/api/llms.txt?shop=...&signature=...
+ *     → https://app.signalor.ai/api/llms.txt?shop=...&signature=...
  */
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);

@@ -17,7 +17,7 @@ services:
       - key: SIGNALOR_SHOPIFY_APP_HMAC_SECRET
         sync: false
       - key: SHOPIFY_APP_URL
-        value: https://signalor-geo-app.onrender.com
+        value: https://app.signalor.ai
       - key: SCOPES
         value: read_products,write_products,read_content,write_content,read_metaobjects,write_metaobjects,read_themes,write_themes,read_customers,read_orders
       - key: DATABASE_URL
