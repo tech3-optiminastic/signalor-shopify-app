@@ -19,6 +19,16 @@ export async function handleContentFix(
 
   const resource = await resolveResource(admin, req.url);
   if (!resource) {
+    // Homepage has no editable body in Shopify — content is in the theme
+    try {
+      const path = new URL(req.url).pathname.replace(/\/$/, "");
+      if (!path || path === "") {
+        return {
+          status: "success",
+          message: "Homepage content is managed by your Shopify theme. Edit it in Online Store > Themes > Customize.",
+        };
+      }
+    } catch { /* ignore */ }
     return { status: "failed", message: `Could not find page or product for URL: ${req.url}` };
   }
 

@@ -18,16 +18,25 @@ export interface ResolvedResource {
  * e.g. "https://mystore.myshopify.com/pages/about-us" → "about-us"
  * e.g. "https://mystore.myshopify.com/products/cool-shirt" → "cool-shirt"
  */
-export function extractHandle(url: string): { handle: string; resourceHint: "pages" | "products" | null } {
+export function extractHandle(url: string): { handle: string; resourceHint: "pages" | "products" | "homepage" | null } {
   try {
     const path = new URL(url).pathname.replace(/\/$/, "");
     const segments = path.split("/").filter(Boolean);
+
+    // Homepage — no path segments
+    if (segments.length === 0) {
+      return { handle: "", resourceHint: "homepage" };
+    }
 
     if (segments.length >= 2 && segments[0] === "pages") {
       return { handle: segments[1], resourceHint: "pages" };
     }
     if (segments.length >= 2 && segments[0] === "products") {
       return { handle: segments[1], resourceHint: "products" };
+    }
+    // Collection pages
+    if (segments.length >= 2 && segments[0] === "collections") {
+      return { handle: segments[1], resourceHint: null };
     }
     // Fallback: last segment
     return { handle: segments[segments.length - 1] || "", resourceHint: null };

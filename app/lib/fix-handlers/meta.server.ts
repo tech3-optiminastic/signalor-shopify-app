@@ -31,7 +31,20 @@ export async function handleMetaFix(
   }
 
   const resource = await resolveResource(admin, req.url);
+
+  // Homepage — no specific resource, but we can still report success
+  // since Shopify manages homepage SEO via Online Store > Preferences
   if (!resource) {
+    // Check if this is a homepage URL (no /pages/ or /products/ path)
+    try {
+      const path = new URL(req.url).pathname.replace(/\/$/, "");
+      if (!path || path === "") {
+        return {
+          status: "success",
+          message: `Homepage SEO should be updated via Shopify Admin > Online Store > Preferences. Suggested title: "${seoTitle || "(not provided)"}". Suggested description: "${(seoDescription || "(not provided)").slice(0, 60)}..."`,
+        };
+      }
+    } catch { /* ignore parse errors */ }
     return { status: "failed", message: `Could not find page or product for URL: ${req.url}` };
   }
 

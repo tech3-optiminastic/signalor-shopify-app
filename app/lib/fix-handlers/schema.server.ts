@@ -23,6 +23,17 @@ export async function handleSchemaFix(
 
   const resource = await resolveResource(admin, req.url);
   if (!resource) {
+    // Homepage — schema is injected via Theme App Extension (schema-injection.liquid)
+    // which already auto-generates Organization schema for the homepage
+    try {
+      const path = new URL(req.url).pathname.replace(/\/$/, "");
+      if (!path || path === "") {
+        return {
+          status: "success",
+          message: "Homepage schema is auto-injected by Signalor Theme App Extension. Ensure the Signalor Schema embed is enabled in your theme editor.",
+        };
+      }
+    } catch { /* ignore */ }
     return { status: "failed", message: `Could not find page or product for URL: ${req.url}` };
   }
 
