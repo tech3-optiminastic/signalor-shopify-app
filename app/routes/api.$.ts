@@ -69,7 +69,7 @@ function textResponse(body: string, status: number, maxAge = 0) {
 }
 
 async function fetchMetafield(shop: string, token: string): Promise<string | null> {
-  const resp = await fetch(`https://${shop}/admin/api/2026-04/graphql.json`, {
+  const resp = await fetch(`https://${shop}/admin/api/2026-01/graphql.json`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": token },
     body: JSON.stringify({
@@ -81,7 +81,7 @@ async function fetchMetafield(shop: string, token: string): Promise<string | nul
 }
 
 async function gql(shop: string, token: string, query: string, variables?: Record<string, unknown>) {
-  const resp = await fetch(`https://${shop}/admin/api/2026-04/graphql.json`, {
+  const resp = await fetch(`https://${shop}/admin/api/2026-01/graphql.json`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": token },
     body: JSON.stringify({ query, variables }),

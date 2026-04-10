@@ -18,12 +18,23 @@ export async function action({ request }: ActionFunctionArgs) {
         break;
 
       case "CUSTOMERS_DATA_REQUEST":
-      case "CUSTOMERS_REDACT":
-      case "SHOP_REDACT":
       case "customers/data_request":
+        // We do not persist customer PII; acknowledge for App Store compliance (respond 200).
+        console.log(`customers/data_request for ${shop} — no stored customer data`);
+        break;
+
+      case "CUSTOMERS_REDACT":
       case "customers/redact":
+        // Delete any shop-scoped data tied to customer if we add it later; none stored today.
+        console.log(`customers/redact for ${shop} — acknowledged`);
+        break;
+
+      case "SHOP_REDACT":
       case "shop/redact":
-        console.log(`Compliance webhook ${topic} for ${shop} — acknowledged`);
+        // 48h after uninstall — remove all app data for this shop (sessions + logs).
+        await prisma.session.deleteMany({ where: { shop } });
+        await prisma.fixLog.deleteMany({ where: { shop } });
+        console.log(`shop/redact for ${shop} — shop data removed`);
         break;
 
       default:

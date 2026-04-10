@@ -6,31 +6,36 @@ application_url = "https://app.signalor.ai"
 embedded = false
 
 [access_scopes]
-scopes = "read_products,write_products,read_content,write_content,read_metaobjects,write_metaobjects,read_themes,write_themes,read_customers,read_orders"
+scopes = "read_customers,read_metaobjects,write_metaobjects,read_orders,read_products,write_products,read_content,write_content,read_themes,write_themes"
 
 [auth]
 redirect_urls = [
   "https://app.signalor.ai/auth/callback",
   "http://localhost:8000/api/integrations/shopify/callback/",
-  "http://localhost:3000/auth/callback"
+  "http://localhost:8000/api/integrations/shopify/callback"
 ]
 
 [webhooks]
-api_version = "2026-04"
+api_version = "2026-01"
 
+  # Use full HTTPS URIs so Partner / automated checks resolve the same endpoints as production.
   [[webhooks.subscriptions]]
   topics = ["products/create", "products/update", "products/delete"]
-  uri = "/webhooks/products"
+  uri = "https://app.signalor.ai/webhooks/products"
 
   [[webhooks.subscriptions]]
   topics = ["collections/create", "collections/update", "collections/delete"]
-  uri = "/webhooks/collections"
+  uri = "https://app.signalor.ai/webhooks/collections"
 
-  # Mandatory compliance + uninstall — must use compliance_topics (see Shopify mandatory webhooks docs).
+  # Mandatory compliance webhooks (Privacy law compliance) — same pattern as Shopify docs:
+  # https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks
+  [[webhooks.subscriptions]]
+  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "https://app.signalor.ai/webhooks"
+
   [[webhooks.subscriptions]]
   topics = ["app/uninstalled"]
-  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
-  uri = "/webhooks"
+  uri = "https://app.signalor.ai/webhooks"
 
 [app_proxy]
 subpath = "signalor"

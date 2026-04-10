@@ -19,6 +19,6 @@ services:
       - key: SHOPIFY_APP_URL
         value: https://app.signalor.ai
       - key: SCOPES
-        value: read_products,write_products,read_content,write_content,read_metaobjects,write_metaobjects,read_themes,write_themes,read_customers,read_orders
+        value: read_customers,read_metaobjects,write_metaobjects,read_orders,read_products,write_products,read_content,write_content,read_themes,write_themes
       - key: DATABASE_URL
         sync: false

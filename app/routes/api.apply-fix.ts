@@ -64,7 +64,7 @@ function createAdminClient(shop: string, accessToken: string) {
   return {
     async graphql(query: string, options?: { variables?: Record<string, unknown> }) {
       const resp = await fetch(
-        `https://${shop}/admin/api/2026-04/graphql.json`,
+        `https://${shop}/admin/api/2026-01/graphql.json`,
         {
           method: "POST",
           headers: {
