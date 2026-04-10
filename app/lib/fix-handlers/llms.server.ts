@@ -87,6 +87,36 @@ export async function handleLlmsFix(
   const data = await resp.json();
   const errors = data?.data?.pageCreate?.userErrors;
   if (errors?.length) {
+    // Handle "already taken" — find the existing page and update it
+    const handleTaken = errors.some((e: { message: string }) => e.message.toLowerCase().includes("already been taken"));
+    if (handleTaken) {
+      // Search for the page and update it
+      const existingRetry = await findPageByHandle(admin, "llms-txt");
+      if (existingRetry) {
+        const updateResp = await admin.graphql(
+          `#graphql
+          mutation pageUpdate($id: ID!, $page: PageUpdateInput!) {
+            pageUpdate(id: $id, page: $page) {
+              page { id title handle }
+              userErrors { field message }
+            }
+          }`,
+          {
+            variables: {
+              id: existingRetry.id,
+              page: { body: htmlContent, isPublished: true },
+            },
+          },
+        );
+        const updateData = await updateResp.json();
+        const updateErrors = updateData?.data?.pageUpdate?.userErrors;
+        if (updateErrors?.length) {
+          return { status: "failed", message: updateErrors.map((e: { message: string }) => e.message).join("; ") };
+        }
+        const pageUrl = `https://${shopDomain}/pages/llms-txt`;
+        return { status: "success", message: `llms.txt page updated (${content.length} chars). View it at ${pageUrl}` };
+      }
+    }
     return { status: "failed", message: errors.map((e: { message: string }) => e.message).join("; ") };
   }
 
@@ -102,19 +132,48 @@ async function findPageByHandle(
   admin: AdminClient,
   handle: string,
 ): Promise<{ id: string; title: string } | null> {
-  const resp = await admin.graphql(
-    `#graphql
-    query getPage($handle: String!) {
-      pageByHandle(handle: $handle) {
-        id
-        title
-      }
-    }`,
-    { variables: { handle } },
-  );
-  const data = await resp.json();
-  const page = data?.data?.pageByHandle;
-  return page ? { id: page.id, title: page.title } : null;
+  // Try pageByHandle first
+  try {
+    const resp = await admin.graphql(
+      `#graphql
+      query getPage($handle: String!) {
+        pageByHandle(handle: $handle) {
+          id
+          title
+        }
+      }`,
+      { variables: { handle } },
+    );
+    const data = await resp.json();
+    const page = data?.data?.pageByHandle;
+    if (page) return { id: page.id, title: page.title };
+  } catch {
+    // pageByHandle may not be available in all API versions
+  }
+
+  // Fallback: search all pages for matching handle
+  try {
+    const resp = await admin.graphql(
+      `#graphql
+      query findLlmsPage {
+        pages(first: 50, query: "title:llms") {
+          nodes {
+            id
+            title
+            handle
+          }
+        }
+      }`,
+    );
+    const data = await resp.json();
+    const pages = data?.data?.pages?.nodes || [];
+    const match = pages.find((p: { handle: string }) => p.handle === handle);
+    if (match) return { id: match.id, title: match.title };
+  } catch {
+    // ignore
+  }
+
+  return null;
 }
 
 
