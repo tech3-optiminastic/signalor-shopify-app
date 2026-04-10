@@ -7,10 +7,17 @@ import { invalidateLlmsCache } from "./api.$";
  * Invalidates the llms.txt cache so the next request regenerates it.
  */
 export async function action({ request }: ActionFunctionArgs) {
-  const { shop, topic } = await authenticate.webhook(request);
-  console.log(`Webhook received: ${topic} from ${shop}`);
+  try {
+    const { shop, topic } = await authenticate.webhook(request);
+    console.log(`Webhook received: ${topic} from ${shop}`);
 
-  invalidateLlmsCache(shop);
+    invalidateLlmsCache(shop);
 
-  return new Response("OK", { status: 200 });
+    return new Response("OK", { status: 200 });
+  } catch (error) {
+    if (error instanceof Response) {
+      return error;
+    }
+    throw error;
+  }
 }

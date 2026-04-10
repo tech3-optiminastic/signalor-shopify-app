@@ -46,7 +46,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     console.error("Failed to create metafield definitions:", e);
   }
 
-  return redirect(`/app`);
+  const appUrl = (process.env.SHOPIFY_APP_URL || "").replace(/\/$/, "");
+  if (!appUrl) {
+    throw new Response("SHOPIFY_APP_URL is not configured", { status: 500 });
+  }
+  return redirect(`${appUrl}/app`);
 }
 
 /**

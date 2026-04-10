@@ -26,10 +26,11 @@ api_version = "2026-04"
   topics = ["collections/create", "collections/update", "collections/delete"]
   uri = "/webhooks/collections"
 
-  [webhooks.privacy_compliance]
-  customer_deletion_url = "https://app.signalor.ai/webhooks"
-  customer_data_request_url = "https://app.signalor.ai/webhooks"
-  shop_deletion_url = "https://app.signalor.ai/webhooks"
+  # Mandatory compliance + uninstall — must use compliance_topics (see Shopify mandatory webhooks docs).
+  [[webhooks.subscriptions]]
+  topics = ["app/uninstalled"]
+  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "/webhooks"
 
 [app_proxy]
 subpath = "signalor"
