@@ -18,27 +18,26 @@ redirect_urls = [
 [webhooks]
 api_version = "2026-01"
 
-  # Use full HTTPS URIs so Partner / automated checks resolve the same endpoints as production.
+  # Relative URIs resolve against application_url; CLI dev tunnel updates stay stable.
   [[webhooks.subscriptions]]
   topics = ["products/create", "products/update", "products/delete"]
-  uri = "https://app.signalor.ai/webhooks/products"
+  uri = "/webhooks/products"
 
   [[webhooks.subscriptions]]
   topics = ["collections/create", "collections/update", "collections/delete"]
-  uri = "https://app.signalor.ai/webhooks/collections"
+  uri = "/webhooks/collections"
 
-  # Mandatory compliance webhooks — dedicated HTTPS path
   [[webhooks.subscriptions]]
   compliance_topics = [
     "customers/data_request",
     "customers/redact",
     "shop/redact",
   ]
-  uri = "https://app.signalor.ai/webhooks/compliance"
+  uri = "/webhooks/compliance"
 
   [[webhooks.subscriptions]]
   topics = ["app/uninstalled"]
-  uri = "https://app.signalor.ai/webhooks"
+  uri = "/webhooks"
 
 [app_proxy]
 subpath = "signalor"

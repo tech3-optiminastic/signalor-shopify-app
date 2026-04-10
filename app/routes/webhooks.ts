@@ -1,24 +1,24 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { authenticate } from "~/shopify.server";
-import { prisma } from "~/shopify.server";
+import { authenticate, prisma } from "~/shopify.server";
 
 /**
- * Shopify webhook handler — `app/uninstalled` (compliance webhooks use /webhooks/compliance).
- * authenticate.webhook verifies HMAC; invalid signatures must surface as 401 per Shopify requirements.
+ * `app/uninstalled` — compliance topics are handled by webhooks.compliance.ts.
+ * Return 200 quickly; session cleanup runs async after HMAC verification.
  */
 export async function action({ request }: ActionFunctionArgs) {
   try {
-    const { topic, shop } = await authenticate.webhook(request);
+    const { topic, shop, webhookId } = await authenticate.webhook(request);
 
     switch (topic) {
       case "APP_UNINSTALLED":
       case "app/uninstalled":
-        await prisma.session.deleteMany({ where: { shop } });
-        console.log(`App uninstalled from ${shop} — sessions cleaned up`);
+        void runUninstallEffects(shop, webhookId).catch((err) => {
+          console.error("[webhooks] app/uninstalled async failed", { shop, webhookId, err });
+        });
         break;
 
       default:
-        console.log(`Webhook ${topic} for ${shop}`);
+        console.log(`[webhooks] ${topic} for ${shop}`);
     }
 
     return new Response(null, { status: 200 });
@@ -28,4 +28,9 @@ export async function action({ request }: ActionFunctionArgs) {
     }
     throw error;
   }
+}
+
+async function runUninstallEffects(shop: string, webhookId: string | undefined) {
+  await prisma.session.deleteMany({ where: { shop } });
+  console.log("[webhooks] app/uninstalled — sessions removed", { shop, webhookId });
 }

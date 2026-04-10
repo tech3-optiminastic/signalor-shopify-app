@@ -8,10 +8,14 @@ import { invalidateLlmsCache } from "./api.$";
  */
 export async function action({ request }: ActionFunctionArgs) {
   try {
-    const { shop, topic } = await authenticate.webhook(request);
-    console.log(`Webhook received: ${topic} from ${shop}`);
+    const { shop, topic, webhookId } = await authenticate.webhook(request);
 
-    invalidateLlmsCache(shop);
+    void Promise.resolve()
+      .then(() => {
+        invalidateLlmsCache(shop);
+        console.log("[webhooks.collections]", { topic, shop, webhookId });
+      })
+      .catch((err) => console.error("[webhooks.collections] async failed", err));
 
     return new Response("OK", { status: 200 });
   } catch (error) {
