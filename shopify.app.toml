@@ -27,11 +27,14 @@ api_version = "2026-01"
   topics = ["collections/create", "collections/update", "collections/delete"]
   uri = "https://app.signalor.ai/webhooks/collections"
 
-  # Mandatory compliance webhooks (Privacy law compliance) — same pattern as Shopify docs:
-  # https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks
+  # Mandatory compliance webhooks — dedicated HTTPS path
   [[webhooks.subscriptions]]
-  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
-  uri = "https://app.signalor.ai/webhooks"
+  compliance_topics = [
+    "customers/data_request",
+    "customers/redact",
+    "shop/redact",
+  ]
+  uri = "https://app.signalor.ai/webhooks/compliance"
 
   [[webhooks.subscriptions]]
   topics = ["app/uninstalled"]
