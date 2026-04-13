@@ -1,6 +1,6 @@
 # Signalor GEO — Shopify App Configuration
 
-client_id = "8153badb6e71523e6844833ad6c23b18"
+client_id = "5d7a7f1d16903fb01ddbc54f25f7c3e8"
 name = "Signalor GEO"
 application_url = "https://app.signalor.ai"
 embedded = false
@@ -16,7 +16,6 @@ redirect_urls = [
 [webhooks]
 api_version = "2026-01"
 
-  # Relative URIs resolve against application_url; CLI dev tunnel updates stay stable.
   [[webhooks.subscriptions]]
   topics = ["products/create", "products/update", "products/delete"]
   uri = "/webhooks/products"
