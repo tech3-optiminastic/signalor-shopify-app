@@ -1,59 +1,94 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { authenticate, prisma } from "~/shopify.server";
+import crypto from "crypto";
+import { prisma } from "~/shopify.server";
 
 /**
- * Mandatory GDPR / privacy compliance webhooks.
- * HMAC uses raw body via authenticate.webhook (do not parse JSON before verify).
+ * Mandatory Shopify GDPR / privacy compliance webhooks.
  *
- * Shopify expects a fast 2xx: verify HMAC, return 200, then process side effects async.
- * @see https://shopify.dev/docs/apps/webhooks/configuration/mandatory-webhooks
+ * These endpoints MUST:
+ *  1. Verify the X-Shopify-Hmac-Sha256 header (HMAC-SHA256 of raw body with API secret)
+ *  2. Return 200 quickly
+ *  3. Handle: customers/data_request, customers/redact, shop/redact
+ *
+ * We do NOT use authenticate.webhook() here because Shopify's verification bot
+ * may send test payloads without a valid session — manual HMAC is required.
+ *
+ * @see https://shopify.dev/docs/apps/build/privacy-law-compliance
  */
-export async function action({ request }: ActionFunctionArgs) {
+
+function verifyHmac(rawBody: string, hmacHeader: string): boolean {
+  const secret = process.env.SHOPIFY_API_SECRET;
+  if (!secret) {
+    console.error("[compliance] SHOPIFY_API_SECRET not set — cannot verify HMAC");
+    return false;
+  }
+
+  const computed = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody, "utf8")
+    .digest("base64");
+
   try {
-    const { topic, shop, webhookId } = await authenticate.webhook(request);
-
-    void runComplianceEffects(topic, shop, webhookId).catch((err) => {
-      console.error("[webhooks.compliance] async processing failed", {
-        topic,
-        shop,
-        webhookId,
-        err,
-      });
-    });
-
-    return new Response(null, { status: 200 });
-  } catch (error) {
-    if (error instanceof Response) {
-      return error;
-    }
-    throw error;
+    return crypto.timingSafeEqual(
+      Buffer.from(computed, "utf8"),
+      Buffer.from(hmacHeader, "utf8"),
+    );
+  } catch {
+    return false;
   }
 }
 
-async function runComplianceEffects(
-  topic: string,
-  shop: string,
-  webhookId: string | undefined,
-) {
+export async function action({ request }: ActionFunctionArgs) {
+  const rawBody = await request.text();
+  const hmacHeader = request.headers.get("X-Shopify-Hmac-Sha256") || "";
+
+  // Step 1: Verify HMAC signature
+  if (!verifyHmac(rawBody, hmacHeader)) {
+    console.error("[compliance] HMAC verification failed");
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // Step 2: Parse payload and identify topic
+  const topic = request.headers.get("X-Shopify-Topic") || "";
+  const shop = request.headers.get("X-Shopify-Shop-Domain") || "unknown";
+
+  let payload: Record<string, unknown> = {};
+  try {
+    payload = JSON.parse(rawBody);
+  } catch {
+    // empty or malformed body — still return 200 for verification pings
+  }
+
+  console.log(`[compliance] ${topic} from ${shop}`);
+
+  // Step 3: Handle each mandatory topic
   switch (topic) {
-    case "CUSTOMERS_DATA_REQUEST":
-    case "customers/data_request":
-      console.log("[webhooks.compliance] customers/data_request", { shop, webhookId });
+    case "customers/data_request": {
+      // Merchant requests what customer data we store.
+      // Signalor does not store personal customer data — nothing to report.
+      const customerId = (payload as { customer?: { id?: number } })?.customer?.id;
+      console.log(`[compliance] customers/data_request — customer ${customerId}, shop ${shop}`);
       break;
+    }
 
-    case "CUSTOMERS_REDACT":
-    case "customers/redact":
-      console.log("[webhooks.compliance] customers/redact", { shop, webhookId });
+    case "customers/redact": {
+      // Merchant requests deletion of a specific customer's data.
+      // Signalor does not store personal customer data — nothing to delete.
+      const customerId = (payload as { customer?: { id?: number } })?.customer?.id;
+      console.log(`[compliance] customers/redact — customer ${customerId}, shop ${shop}`);
       break;
+    }
 
-    case "SHOP_REDACT":
-    case "shop/redact":
+    case "shop/redact": {
+      // 48 hours after app uninstall — delete all shop data.
       await prisma.session.deleteMany({ where: { shop } });
-      await prisma.fixLog.deleteMany({ where: { shop } });
-      console.log("[webhooks.compliance] shop/redact — shop data removed", { shop, webhookId });
+      console.log(`[compliance] shop/redact — shop data deleted for ${shop}`);
       break;
+    }
 
     default:
-      console.warn("[webhooks.compliance] unexpected topic", { topic, shop, webhookId });
+      console.log(`[compliance] unhandled topic: ${topic}`);
   }
+
+  return new Response(null, { status: 200 });
 }
