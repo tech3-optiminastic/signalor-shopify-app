@@ -1,42 +1,51 @@
-# Signalor GEO — Shopify App Configuration
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "5d7a7f1d16903fb01ddbc54f25f7c3e8"
 name = "Signalor GEO"
-application_url = "https://app.signalor.ai"
+application_url = "https://app.signalor.ai/"
 embedded = false
 
-[access_scopes]
-scopes = "read_customers,read_metaobjects,write_metaobjects,read_orders,read_products,write_products,read_content,write_content,read_themes,write_themes"
-
-[auth]
-redirect_urls = [
-  "https://app.signalor.ai/auth/callback"
-]
+[build]
+automatically_update_urls_on_dev = true
 
 [webhooks]
 api_version = "2026-01"
 
-  [[webhooks.subscriptions]]
-  topics = ["products/create", "products/update", "products/delete"]
-  uri = "/webhooks/products"
+  [webhooks.privacy_compliance]
+  customer_deletion_url = "https://app.signalor.ai/webhooks/compliance"
+  customer_data_request_url = "https://app.signalor.ai/webhooks/compliance"
+  shop_deletion_url = "https://app.signalor.ai/webhooks/compliance"
 
   [[webhooks.subscriptions]]
-  topics = ["collections/create", "collections/update", "collections/delete"]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks"
+
+  [[webhooks.subscriptions]]
+  topics = [
+  "collections/create",
+  "collections/delete",
+  "collections/update"
+]
   uri = "/webhooks/collections"
 
   [[webhooks.subscriptions]]
-  topics = ["app/uninstalled"]
-  uri = "/webhooks"
+  topics = [ "products/create", "products/delete", "products/update" ]
+  uri = "/webhooks/products"
 
-[webhooks.privacy_compliance]
-customer_deletion_url = "https://app.signalor.ai/webhooks/compliance"
-customer_data_request_url = "https://app.signalor.ai/webhooks/compliance"
-shop_deletion_url = "https://app.signalor.ai/webhooks/compliance"
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,read_metaobjects,write_metaobjects,read_orders,read_products,write_products,read_content,write_content,read_themes,write_themes"
+optional_scopes = [ ]
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [
+  "https://app.signalor.ai/auth/callback",
+  "http://localhost:8000/api/integrations/shopify/callback/",
+  "http://localhost:8000/api/integrations/shopify/callback"
+]
 
 [app_proxy]
+url = "https://app.signalor.ai/api"
 subpath = "signalor"
 prefix = "apps"
-url = "https://app.signalor.ai/api"
-
-[build]
-automatically_update_urls_on_dev = true
