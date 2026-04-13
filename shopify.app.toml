@@ -28,16 +28,13 @@ api_version = "2026-01"
   uri = "/webhooks/collections"
 
   [[webhooks.subscriptions]]
-  compliance_topics = [
-    "customers/data_request",
-    "customers/redact",
-    "shop/redact",
-  ]
-  uri = "/webhooks/compliance"
-
-  [[webhooks.subscriptions]]
   topics = ["app/uninstalled"]
   uri = "/webhooks"
+
+[webhooks.privacy_compliance]
+customer_deletion_url = "https://app.signalor.ai/webhooks/compliance"
+customer_data_request_url = "https://app.signalor.ai/webhooks/compliance"
+shop_deletion_url = "https://app.signalor.ai/webhooks/compliance"
 
 [app_proxy]
 subpath = "signalor"
