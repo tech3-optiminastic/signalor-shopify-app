@@ -10,9 +10,7 @@ scopes = "read_customers,read_metaobjects,write_metaobjects,read_orders,read_pro
 
 [auth]
 redirect_urls = [
-  "https://app.signalor.ai/auth/callback",
-  "http://localhost:8000/api/integrations/shopify/callback/",
-  "http://localhost:8000/api/integrations/shopify/callback"
+  "https://app.signalor.ai/auth/callback"
 ]
 
 [webhooks]
